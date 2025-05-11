@@ -1,0 +1,16 @@
+All html files should be in views folder
+
+For regex on routes:
+- Regex must begin and end with / (don't even need '' or "")
+- Must escape special regex characters with \ if you only want them as the actual character in the regex
+- ^x means begin with x (nothing before x)
+- x$ means end with x (nothing after x)
+- x|y means x or y
+- page(2)? means it can be page or page2 (meaning that the 2 is optional)
+
+Shift+Alt+DownArrow copies a highlighted selection and pastes it down below the highlighted selection
+For a redirect, simply including a file to redirect to sends a 302 status code, which won't necessarily
+  get the browser to update their redirect for that page. Instead, include the 301 status code in the
+  redirect call before providing the file path to redirect to.
+When directing to 404 page, sendFile defaults to sending 200 code, so must chain status(404) between res
+  and sendFile to get correct status code sent.
