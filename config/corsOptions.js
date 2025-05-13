@@ -1,6 +1,6 @@
 // Cross Origin Resource Sharing
 const whitelist = [
-    'https://bead-shine-celestite.glitch.me'
+    'https://energetic-well-scion.glitch.me'
 ];
 
 const corsOptions = {
