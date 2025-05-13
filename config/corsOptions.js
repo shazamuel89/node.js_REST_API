@@ -8,7 +8,7 @@ const whitelist = [
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // REMOVE THE  || !origin BEFORE DEPLOYING
+        // REMOVE THE || !origin BEFORE DEPLOYING
         if (whitelist.indexOf(origin) != -1 || !origin) {
             callback(null, true)
         } else {
