@@ -16,7 +16,7 @@ const getAllStates = async (req, res) => {
         for (const state of statesArray) {
             if ((contigFlag === true) && (nonContigArray.includes(state.code))) {
                 continue;
-            } else if ((contigFlag === false) && (nonContigArray.includes(state.code))) {
+            } else if ((contigFlag === false) && (!nonContigArray.includes(state.code))) {
                 continue;
             }
             const stateToAppend = { ...state };
@@ -79,7 +79,7 @@ const getStatePopulation = async (req, res) => {
     }
     const stateWithPopulation = {
         state:      state.state,
-        population: state.population
+        population: state.population.toLocaleString('en-US')
     };
     res.json(stateWithPopulation);
 }
@@ -98,9 +98,10 @@ const getStateAdmission = async (req, res) => {
 
 const getRandomFunfact = async (req, res) => {
     try {
+        const state = statesArray.find(stateElement => stateElement.code === req.stateCode);
         const stateFunfacts = await State.findOne({ stateCode: req.stateCode });
         if (!stateFunfacts?.funfacts?.length) {
-            return res.status(404).json({ message: "No fun facts found" });
+            return res.status(404).json({ message: `No Fun Facts found for ${state.state}` });
         }
         const randomFunfactIndex = Math.floor(Math.random() * stateFunfacts.funfacts.length);
         res.json({ funfact: stateFunfacts.funfacts[randomFunfactIndex]});
@@ -112,10 +113,10 @@ const getRandomFunfact = async (req, res) => {
 
 const createNewFunfacts = async (req, res) => {
     if (!req?.body?.funfacts) {
-        return res.status(400).json({ message: "funfacts parameter is required" });
+        return res.status(400).json({ message: "State fun facts value required" });
     }
     if (!Array.isArray(req.body.funfacts)) {
-        return res.status(400).json({ message: "funfacts must be an array" });
+        return res.status(400).json({ message: "State fun facts value must be an array" });
     }
     try {
         const stateFunfacts = await State.findOne({ stateCode: req.stateCode });
@@ -137,14 +138,21 @@ const createNewFunfacts = async (req, res) => {
 }
 
 const updateFunfact = async (req, res) => {
-    if (!req?.body?.index || !req?.body?.funfact) {
-        return res.status(400).json({ message: "index and funfact parameters are required" });
+    if (!req?.body?.index) {
+        return res.status(400).json({ message: "State fun fact index value required" });
+    }
+    if (!req?.body?.funfact || !typeof req.body.funfact == "string") {
+        return res.status(400).json({ message: "State fun fact value required" });
     }
     const indexToUpdate = Number(req.body.index) - 1; // Since index from req is based on 1-starting-index array, change it to be based on a 0-starting-index array
     try {
+        const state = statesArray.find(stateElement => stateElement.code === req.stateCode);
         const stateFunfacts = await State.findOne({ stateCode: req.stateCode });
-        if (!stateFunfacts || !stateFunfacts?.funfacts?.[indexToUpdate]) {
-            return res.status(404).json({ message: "No fun fact found for state" });
+        if (!stateFunfacts) {
+            return res.status(404).json({ message: `No Fun Facts found for ${state.state}` });
+        }
+        if (!stateFunfacts?.funfacts?.[indexToUpdate]) {
+            return res.status(404).json({ message: `No Fun Fact found at that index for ${state.state}` });
         }
         stateFunfacts.funfacts[indexToUpdate] = req.body.funfact;
         const funfactUpdate = await stateFunfacts.save();
@@ -157,13 +165,17 @@ const updateFunfact = async (req, res) => {
 
 const deleteFunfact = async (req, res) => {
     if (!req?.body?.index) {
-        return res.status(400).json({ message: "index parameter is required" });
+        return res.status(400).json({ message: "State fun fact index value required" });
     }
     const indexToDelete = Number(req.body.index) - 1; // Since index from req is based on 1-starting-index array, change it to be based on a 0-starting-index array
     try {
+        const state = statesArray.find(stateElement => stateElement.code === req.stateCode);
         const stateFunfacts = await State.findOne({ stateCode: req.stateCode });
-        if (!stateFunfacts || !stateFunfacts?.funfacts?.[indexToDelete]) {
-            return res.status(404).json({ message: "No fun fact found for state" });
+        if (!stateFunfacts) {
+            return res.status(404).json({ message: `No Fun Facts found for ${state.state}` });
+        }
+        if (!stateFunfacts?.funfacts?.[indexToDelete]) {
+            return res.status(404).json({ message: `No Fun Fact found at that index for ${state.state}` });
         }
         const filteredArray = stateFunfacts.funfacts.filter((_, index) => {
             return index != indexToDelete;
