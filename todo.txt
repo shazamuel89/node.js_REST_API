@@ -1,2 +1,0 @@
-Just before deploying:
-- Change corsOptions (code to change marked in comments)
