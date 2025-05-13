@@ -1,6 +1,6 @@
 // Cross Origin Resource Sharing
 const whitelist = [
-    'https://energetic-well-scion.glitch.me'
+    'https://innate-boundless-vacuum.glitch.me'
 ];
 
 const corsOptions = {
