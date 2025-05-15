@@ -1,6 +1,6 @@
 // Cross Origin Resource Sharing
 const whitelist = [
-    'https://innate-boundless-vacuum.glitch.me'
+    'https://dazzling-snickerdoodle-777101.netlify.app/'
 ];
 
 const corsOptions = {
